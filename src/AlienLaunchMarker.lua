@@ -27,6 +27,9 @@ function AlienLaunchMarker:init(world)
 
     -- our alien we will eventually spawn
     self.alien = nil
+    self.aliens = {}
+    self.split = false
+    self.collided = false
 end
 
 function AlienLaunchMarker:update(dt)
@@ -46,14 +49,11 @@ function AlienLaunchMarker:update(dt)
             self.launched = true
 
             -- spawn new alien in the world, passing in user data of player
-            self.alien = Alien(self.world, 'round', self.shiftedX, self.shiftedY, 'Player')
-
-            -- apply the difference between current X,Y and base X,Y as launch vector impulse
-            self.alien.body:setLinearVelocity((self.baseX - self.shiftedX) * 10, (self.baseY - self.shiftedY) * 10)
-
-            -- make the alien pretty bouncy
-            self.alien.fixture:setRestitution(0.4)
-            self.alien.body:setAngularDamping(1)
+            self.alien = self:spawnAlien(self.shiftedX, self.shiftedY,
+                (self.baseX - self.shiftedX) * 10,
+                (self.baseY - self.shiftedY) * 10)
+            
+            table.insert(self.aliens, self.alien)
 
             -- we're no longer aiming
             self.aiming = false
@@ -64,6 +64,9 @@ function AlienLaunchMarker:update(dt)
             self.shiftedX = math.min(self.baseX + 30, math.max(x, self.baseX - 30))
             self.shiftedY = math.min(self.baseY + 30, math.max(y, self.baseY - 30))
         end
+    -- Split on space press
+    elseif love.keyboard.wasPressed('space') and not self.collided and not self.split then
+        self:splitAlien()
     end
 end
 
@@ -103,6 +106,39 @@ function AlienLaunchMarker:render()
         
         love.graphics.setColor(1, 1, 1, 1)
     else
-        self.alien:render()
+        for _, alien in pairs(self.aliens) do
+            if not alien.body:isDestroyed() then
+                alien:render()
+            end
+        end
     end
+end
+
+function AlienLaunchMarker:spawnAlien(x, y, velocityX, velocityY)
+    local alien = Alien(self.world, 'round', x, y, 'Player')
+    alien.body:setLinearVelocity(velocityX, velocityY)
+    alien.fixture:setRestitution(0.4)
+    alien.body:setAngularDamping(1)
+    -- mask alien so it does not collide with the other aliens
+    alien.fixture:setFilterData(1, 65535, -1)
+    return alien
+end
+
+function AlienLaunchMarker:splitAlien()
+    local x, y = self.alien.body:getPosition()
+    local velocityX, velocityY = self.alien.body:getLinearVelocity()
+
+    local splitAngle = math.rad(20)
+    local sin, cos = math.sin(splitAngle), math.cos(splitAngle)
+    -- Create two new aliens with linar velocity for an angle of 30
+    local alienUp = self:spawnAlien(x, y - ALIEN_SIZE,
+        velocityX,
+        velocityX * sin + velocityY * cos)
+    local alienDown = self:spawnAlien(x, y + ALIEN_SIZE,
+        velocityX,
+        -velocityX * sin + velocityY * cos)
+    -- Insert new aliens in table
+    table.insert(self.aliens, alienUp)
+    table.insert(self.aliens, alienDown)
+    self.split = true
 end
