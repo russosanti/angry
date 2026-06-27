@@ -13,8 +13,9 @@
 
 Obstacle = Class{}
 
-function Obstacle:init(world, shape, x, y)
+function Obstacle:init(world, shape, x, y, material)
     self.shape = shape or 'horizontal'
+    self.material = material or 'wood'
 
     if self.shape == 'horizontal' then
         self.frame = 2
@@ -44,6 +45,7 @@ function Obstacle:init(world, shape, x, y)
     self.fixture = love.physics.newFixture(self.body, self.shape)
 
     self.fixture:setUserData('Obstacle')
+    self.body:setUserData(self)
 end
 
 function Obstacle:update(dt)
@@ -51,7 +53,7 @@ function Obstacle:update(dt)
 end
 
 function Obstacle:render()
-    love.graphics.draw(gTextures['wood'], gFrames['wood'][self.frame],
+    love.graphics.draw(gTextures[self.material], gFrames[self.material][self.frame],
         self.body:getX(), self.body:getY(), self.body:getAngle(), 1, 1,
         self.width / 2, self.height / 2)
 end

@@ -77,6 +77,15 @@ function Level:init()
             end
         end
 
+        -- glass hits ground
+        if types['Obstacle'] and types['Ground'] then
+            local obstacleFixture = a:getUserData() == 'Obstacle' and a or b
+
+            if obstacleFixture:getBody():getUserData().material == 'glass' and obstacleFixture:getBody():getLinearVelocity() > 0 then
+                table.insert(self.destroyedBodies, obstacleFixture:getBody())
+            end
+        end
+
         -- if we hit the ground, play a bounce sound
         if types['Player'] and types['Ground'] then
             gSounds['bounce']:stop()
@@ -119,11 +128,11 @@ function Level:init()
 
     -- spawn a few obstacles
     table.insert(self.obstacles, Obstacle(self.world, 'vertical',
-        VIRTUAL_WIDTH - 120, VIRTUAL_HEIGHT - 35 - 110 / 2))
+        VIRTUAL_WIDTH - 120, VIRTUAL_HEIGHT - 35 - 110 / 2, 'glass'))
     table.insert(self.obstacles, Obstacle(self.world, 'vertical',
-        VIRTUAL_WIDTH - 35, VIRTUAL_HEIGHT - 35 - 110 / 2))
+        VIRTUAL_WIDTH - 35, VIRTUAL_HEIGHT - 35 - 110 / 2, 'metal'))
     table.insert(self.obstacles, Obstacle(self.world, 'horizontal',
-        VIRTUAL_WIDTH - 80, VIRTUAL_HEIGHT - 35 - 110 - 35 / 2))
+        VIRTUAL_WIDTH - 80, VIRTUAL_HEIGHT - 35 - 110 - 35 / 2, 'wood'))
 
     -- ground data
     self.groundBody = love.physics.newBody(self.world, -VIRTUAL_WIDTH, VIRTUAL_HEIGHT - 35, 'static')
