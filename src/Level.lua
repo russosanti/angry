@@ -9,7 +9,7 @@
 Level = Class{}
 
 function Level:init()
-    
+
     -- create a new "world" (where physics take place), with no x gravity
     -- and 300 units of Y gravity (for downward force)
     self.world = love.physics.newWorld(0, 300)
@@ -39,7 +39,7 @@ function Level:init()
             -- grab the body that belongs to the player
             local playerFixture = aType == 'Player' and a or b
             local obstacleFixture = aType == 'Obstacle' and a or b
-            
+
             -- destroy the obstacle if player's combined X/Y velocity is high enough
             local velX, velY = playerFixture:getBody():getLinearVelocity()
             local sumVel = math.abs(velX) + math.abs(velY)
@@ -104,7 +104,7 @@ function Level:init()
     -- implementing any functionality with them in this demo; use-case specific
     -- http://www.iforce2d.net/b2dtut/collision-anatomy
     function endContact(a, b, coll)
-        
+
     end
 
     function preSolve(a, b, coll)
@@ -151,16 +151,14 @@ function Level:init()
     self.groundFixture:setFriction(0.5)
     self.groundFixture:setUserData('Ground')
 
-
-
     -- Pendulum initialize
     local anchorX = VIRTUAL_WIDTH / 2
     local anchorY = 100
-    local pendulumRod = Obstacle(self.world, 'vertical', anchorX, anchorY + 110 / 2, 'metal')
-    local pendulumWeight = Obstacle(self.world, 'horizontal', anchorX, anchorY + 110 + 35 / 2, 'stone')
+    local pendulumRod = Obstacle(self.world, 'vertical', anchorX, anchorY + 110 / 2, 'wood')
+    local pendulumWeight = Obstacle(self.world, 'horizontal', anchorX, anchorY + 110 + 35 / 2, 'wood')
     table.insert(self.obstacles, pendulumRod)
     table.insert(self.obstacles, pendulumWeight)
-    
+
     -- Joints
     self.pendulumPivot = love.physics.newRevoluteJoint(self.groundBody, pendulumRod.body, anchorX, anchorY, false)
     self.pendulumWeld = love.physics.newWeldJoint(pendulumRod.body, pendulumWeight.body, anchorX, anchorY + 110, false)
@@ -263,7 +261,6 @@ function Level:update(dt)
 end
 
 function Level:render()
-    
     -- render ground tiles across full scrollable width of the screen
     for x = -VIRTUAL_WIDTH, VIRTUAL_WIDTH * 2, 35 do
         love.graphics.draw(gTextures['tiles'], gFrames['tiles'][12], x, VIRTUAL_HEIGHT - 35)
