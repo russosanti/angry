@@ -19,3 +19,10 @@ MATERIAL_HITS = {
     stone = 3,
     metal = 4
 }
+
+MATERIAL_DAMAGE_VELOCITY = {
+    glass = 20,
+    wood = 40,
+    stone = 75,
+    metal = 100
+}

@@ -45,7 +45,7 @@ function Level:init()
             local sumVel = math.abs(velX) + math.abs(velY)
 
             local obstacle = obstacleFixture:getUserData().entity
-            if sumVel > 20 and obstacle:takeDamage(1) then
+            if sumVel > (MATERIAL_DAMAGE_VELOCITY[obstacle.material] or 20) and obstacle:takeDamage(1) then
                 table.insert(self.destroyedBodies, obstacle.body)
             end
         end
@@ -86,8 +86,9 @@ function Level:init()
         if types['Obstacle'] and types['Ground'] then
             local obstacleFixture = aType == 'Obstacle' and a or b
             local obstacle = obstacleFixture:getUserData().entity
+            local _, vel = obstacle.body:getLinearVelocity()
 
-            if obstacle.material == 'glass' and obstacle.body:getLinearVelocity() > 0 and obstacle:takeDamage(1) then
+            if obstacle.material == 'glass' and  vel > 0 and obstacle:takeDamage(1) then
                 table.insert(self.destroyedBodies, obstacle.body)
             end
         end
@@ -140,9 +141,9 @@ function Level:init()
     table.insert(self.obstacles, Obstacle(self.world, 'horizontal',
         VIRTUAL_WIDTH - 80, VIRTUAL_HEIGHT - 35 - 110 - 35 / 2, 'wood'))
     table.insert(self.obstacles, Obstacle(self.world, 'vertical',
-        VIRTUAL_WIDTH - 150, VIRTUAL_HEIGHT - 35 - 110 / 2, 'stone'))
+        VIRTUAL_WIDTH - 170, VIRTUAL_HEIGHT - 35 - 110 / 2, 'stone'))
     table.insert(self.obstacles, Obstacle(self.world, 'vertical',
-        VIRTUAL_WIDTH - 180, VIRTUAL_HEIGHT - 35 - 110 / 2, 'metal'))
+        VIRTUAL_WIDTH - 200, VIRTUAL_HEIGHT - 35 - 110 / 2, 'metal'))
 
     -- ground data
     self.groundBody = love.physics.newBody(self.world, -VIRTUAL_WIDTH, VIRTUAL_HEIGHT - 35, 'static')
