@@ -67,16 +67,26 @@ gFrames = {
         love.graphics.newQuad(355, 105, 35, 110, gTextures['glass']:getDimensions())
     },
     ['stone'] = {
+        -- cracked and standard horizontal
         love.graphics.newQuad(0, 0, 110, 35, gTextures['stone']:getDimensions()),
         love.graphics.newQuad(0, 35, 110, 35, gTextures['stone']:getDimensions()),
+        -- cracked and standard vertical
         love.graphics.newQuad(320, 180, 35, 110, gTextures['stone']:getDimensions()),
-        love.graphics.newQuad(355, 355, 35, 110, gTextures['stone']:getDimensions())
+        love.graphics.newQuad(355, 355, 35, 110, gTextures['stone']:getDimensions()),
+        -- chipped horizontal and vertical
+        love.graphics.newQuad(0, 140, 110, 35, gTextures['stone']:getDimensions()),
+        love.graphics.newQuad(320, 0, 35, 110, gTextures['stone']:getDimensions())
     },
     ['metal'] = {
+        -- cracked and standard horizontal
         love.graphics.newQuad(110, 0, 110, 35, gTextures['metal']:getDimensions()),
         love.graphics.newQuad(0, 70, 110, 35, gTextures['metal']:getDimensions()),
-        love.graphics.newQuad(320, 400, 35, 110, gTextures['metal']:getDimensions()),
-        love.graphics.newQuad(320, 110, 35, 110, gTextures['metal']:getDimensions())
+        -- cracked and standard vertical
+        love.graphics.newQuad(320, 395, 35, 110, gTextures['metal']:getDimensions()),
+        love.graphics.newQuad(320, 110, 35, 110, gTextures['metal']:getDimensions()),
+        -- chipped horizontal and vertical
+        love.graphics.newQuad(0, 175, 110, 35, gTextures['metal']:getDimensions()),
+        love.graphics.newQuad(355, 180, 35, 110, gTextures['metal']:getDimensions())
     }
 }
 

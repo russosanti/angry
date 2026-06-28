@@ -25,6 +25,10 @@
 love.graphics.setDefaultFilter('nearest', 'nearest')
 require 'src.Dependencies'
 
+if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
+  require("lldebugger").start()
+end
+
 -- deprecation bypass for LÖVE 12+
 local major, minor = love.getVersion()
 if major > 11 then
