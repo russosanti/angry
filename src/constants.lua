@@ -12,3 +12,17 @@ ALIEN_SIZE = TILE_SIZE
 
 DEGREES_TO_RADIANS = 0.0174532925199432957
 RADIANS_TO_DEGREES = 57.295779513082320876
+
+MATERIAL_HITS = {
+    glass = 1,
+    wood = 2,
+    stone = 3,
+    metal = 4
+}
+
+MATERIAL_DAMAGE_VELOCITY = {
+    glass = 20,
+    wood = 40,
+    stone = 75,
+    metal = 100
+}

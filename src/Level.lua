@@ -21,11 +21,15 @@ function Level:init()
     -- define collision callbacks for our world; the World object expects four,
     -- one for different stages of any given collision
     function beginContact(a, b, coll)
-        local types = {}
-        types[a:getUserData()] = true
-        types[b:getUserData()] = true
+        local aType = type(a:getUserData()) == 'table' and a:getUserData().type or a:getUserData()
+        local bType = type(b:getUserData()) == 'table' and b:getUserData().type or b:getUserData()
 
-        if types['Player'] and not (a:getUserData() == 'Player' and b:getUserData() == 'Player') then
+        local types = {
+            [aType] = true,
+            [bType] = true
+        }
+
+        if types['Player'] and not (aType == 'Player' and bType == 'Player') then
             self.launchMarker.collided = true
         end
 
@@ -33,15 +37,16 @@ function Level:init()
         if types['Obstacle'] and types['Player'] then
 
             -- grab the body that belongs to the player
-            local playerFixture = a:getUserData() == 'Player' and a or b
-            local obstacleFixture = a:getUserData() == 'Obstacle' and a or b
+            local playerFixture = aType == 'Player' and a or b
+            local obstacleFixture = aType == 'Obstacle' and a or b
             
             -- destroy the obstacle if player's combined X/Y velocity is high enough
             local velX, velY = playerFixture:getBody():getLinearVelocity()
             local sumVel = math.abs(velX) + math.abs(velY)
 
-            if sumVel > 20 then
-                table.insert(self.destroyedBodies, obstacleFixture:getBody())
+            local obstacle = obstacleFixture:getUserData().entity
+            if sumVel > (MATERIAL_DAMAGE_VELOCITY[obstacle.material] or 20) and obstacle:takeDamage(1) then
+                table.insert(self.destroyedBodies, obstacle.body)
             end
         end
 
@@ -49,8 +54,8 @@ function Level:init()
         if types['Obstacle'] and types['Alien'] then
 
             -- grab the body that belongs to the player
-            local obstacleFixture = a:getUserData() == 'Obstacle' and a or b
-            local alienFixture = a:getUserData() == 'Alien' and a or b
+            local obstacleFixture = aType == 'Obstacle' and a or b
+            local alienFixture = aType == 'Alien' and a or b
 
             -- destroy the alien if falling debris is falling fast enough
             local velX, velY = obstacleFixture:getBody():getLinearVelocity()
@@ -65,8 +70,8 @@ function Level:init()
         if types['Player'] and types['Alien'] then
 
             -- grab the bodies that belong to the player and alien
-            local playerFixture = a:getUserData() == 'Player' and a or b
-            local alienFixture = a:getUserData() == 'Alien' and a or b
+            local playerFixture = aType == 'Player' and a or b
+            local alienFixture = aType == 'Alien' and a or b
 
             -- destroy the alien if player is traveling fast enough
             local velX, velY = playerFixture:getBody():getLinearVelocity()
@@ -74,6 +79,17 @@ function Level:init()
 
             if sumVel > 20 then
                 table.insert(self.destroyedBodies, alienFixture:getBody())
+            end
+        end
+
+        -- glass hits ground
+        if types['Obstacle'] and types['Ground'] then
+            local obstacleFixture = aType == 'Obstacle' and a or b
+            local obstacle = obstacleFixture:getUserData().entity
+            local _, vel = obstacle.body:getLinearVelocity()
+
+            if obstacle.material == 'glass' and  vel > 0 and obstacle:takeDamage(1) then
+                table.insert(self.destroyedBodies, obstacle.body)
             end
         end
 
@@ -119,11 +135,15 @@ function Level:init()
 
     -- spawn a few obstacles
     table.insert(self.obstacles, Obstacle(self.world, 'vertical',
-        VIRTUAL_WIDTH - 120, VIRTUAL_HEIGHT - 35 - 110 / 2))
+        VIRTUAL_WIDTH - 120, VIRTUAL_HEIGHT - 35 - 110 / 2, 'glass'))
     table.insert(self.obstacles, Obstacle(self.world, 'vertical',
-        VIRTUAL_WIDTH - 35, VIRTUAL_HEIGHT - 35 - 110 / 2))
+        VIRTUAL_WIDTH - 35, VIRTUAL_HEIGHT - 35 - 110 / 2, 'metal'))
     table.insert(self.obstacles, Obstacle(self.world, 'horizontal',
-        VIRTUAL_WIDTH - 80, VIRTUAL_HEIGHT - 35 - 110 - 35 / 2))
+        VIRTUAL_WIDTH - 80, VIRTUAL_HEIGHT - 35 - 110 - 35 / 2, 'wood'))
+    table.insert(self.obstacles, Obstacle(self.world, 'vertical',
+        VIRTUAL_WIDTH - 170, VIRTUAL_HEIGHT - 35 - 110 / 2, 'stone'))
+    table.insert(self.obstacles, Obstacle(self.world, 'vertical',
+        VIRTUAL_WIDTH - 200, VIRTUAL_HEIGHT - 35 - 110 / 2, 'metal'))
 
     -- ground data
     self.groundBody = love.physics.newBody(self.world, -VIRTUAL_WIDTH, VIRTUAL_HEIGHT - 35, 'static')
