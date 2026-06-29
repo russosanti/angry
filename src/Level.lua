@@ -155,7 +155,7 @@ function Level:init()
     local anchorX = VIRTUAL_WIDTH / 2
     local anchorY = 100
     local pendulumRod = Obstacle(self.world, 'vertical', anchorX, anchorY + 110 / 2, 'wood')
-    local pendulumWeight = Obstacle(self.world, 'horizontal', anchorX, anchorY + 110 + 35 / 2, 'wood')
+    local pendulumWeight = Obstacle(self.world, 'horizontal', anchorX, anchorY + 110 + 35 / 2, 'stone')
     table.insert(self.obstacles, pendulumRod)
     table.insert(self.obstacles, pendulumWeight)
 
